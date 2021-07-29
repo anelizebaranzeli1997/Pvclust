@@ -1,0 +1,27 @@
+#Pvclust
+#Método de probabilidade de clusterização. No R instale e carregue as livrarias e personalize o comando:
+
+library(ape)  
+library(SDMTools)  
+library(Hmisc)
+library(pvclust)
+
+##########rpob2
+mydata<-read.csv("rpob2.pim",header=F,sep=" ")
+mydata[,1]
+rownames(mydata)<-mydata[,1]
+mydata<-mydata[,-1]
+colnames(mydata)<-rownames(mydata)
+
+d.mydata <- dist(mydata)
+h.mydata <- hclust(d.mydata)
+write.tree(as.phylo(h.mydata),digits=2, file="rpob2.dnd") 
+
+m.mydata<-as.matrix(mydata)
+boots.mydata <- pvclust(m.mydata, method.hclust="ward.D2",method.dist="correlation",nboot=1000)
+
+png('rpob2.png',width = 3200, height = 4000, units = "px", pointsize =18,res=300)
+plot(boots.mydata)
+dev.off()
+
+write.tree(as.phylo(boots.mydata$hclust),digits=2, file="rpob2.newick")
